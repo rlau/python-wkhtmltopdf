@@ -50,7 +50,7 @@ class WKOption(object):
 
 OPTIONS = [
     WKOption('enable-plugins', '-F',
-                 default=True,
+                 default=False,
                  help="use flash and other plugins",
                  ),
     WKOption('disable-javascript', '-J',
@@ -117,10 +117,13 @@ class WKhtmlToPdf(object):
     def __init__(self, *args, **kwargs):
         self.url = None
         self.output_file = None
+        self.params = []
 
         # get the url and output_file options
         try:
             self.url, self.output_file = args[0], args[1]
+            print self.url
+            print self.output_file
         except IndexError:
             pass
 
@@ -134,9 +137,11 @@ class WKhtmlToPdf(object):
 
         # set the options per the kwargs coming in
         for o in OPTIONS:
-            o.value = kwargs.get(o.dest)
+            if kwargs.get(o.dest) is not None:
+                o.value = kwargs.get(o.dest)
+                self.params.append(o.to_cmd())
 
-        self.params = [o.to_cmd() for o in OPTIONS]
+        # self.params = [o.to_cmd() for o in OPTIONS]
         self.screen_resolution = [1024, 768]
         self.color_depth = 24
 
@@ -155,11 +160,15 @@ class WKhtmlToPdf(object):
             os.putenv("DISPLAY", '127.0.0.1:0')
 
         # execute the command
-        command = 'wkhtmltopdf %s "%s" "%s" >> /tmp/wkhtp.log' % (
-                        " ".join([cmd for cmd in self.params]),
-                        self.url,
-                        self.output_file
-                  )
+        # change up depending on how the configuraiton is installed
+        command = 'wkhtmltopdf-0.9.9-OS-X.i368'
+        # prevents spacing errors
+        print self.params
+        if len(self.params) > 0:
+            command += " " + " ".join([cmd for cmd in self.params])
+        
+        command +=' %s %s >> /tmp/wkhtp.log' % ( self.url, self.output_file)
+
         try:
             p = Popen(command, shell=True,
                         stdout=PIPE, stderr=PIPE, close_fds=True)
