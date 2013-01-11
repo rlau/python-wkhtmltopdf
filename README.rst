@@ -41,7 +41,7 @@ python-wkhtmltopdf
 
 1. From git::
 
-    $ git clone git@github.com:qoda/python-wkhtmltopdf.git
+    $ git clone git@github.com:rlau/python-wkhtmltopdf.git
     $ cd python-wkhtmltopdf
     $ python setup.py install
 
@@ -56,8 +56,8 @@ Simple Usage::
     from wkhtmltopdf import WKHtmlToPdf
     
     wkhtmltopdf = WKHtmlToPdf(
-        url='http://www.example.com',
-        output_file='~/example.pdf',
+        'http://www.example.com',
+        '~/example.pdf',
     )
     wkhtmltopdf.render()
         
@@ -65,7 +65,7 @@ Simple Usage::
         
     from wkhtmltopdf import wkhtmltopdf
     
-    wkhtmltopdf(url='example.com', output_file='~/example.pdf')
+    wkhtmltopdf('example.com', '~/example.pdf')
         
 3. Use from commandline (installed)::
         
@@ -79,12 +79,13 @@ Simple Usage::
 Required Arguments:
 ~~~~~~~~~~~~~~~~~~~
 
-- **url** - the url to convert to pdf
-- **output_file** - the pdf file that you want to create
+- **url** - the url or file path of the html you wish to convert
+- **output_file** - the file that you want to create. Filetypes: .pdf, .jpg, .png (possibly others as well)
         
 Optional Arguments:
 ~~~~~~~~~~~~~~~~~~~
 
+PDF Options:
 - **screen_resolution** (default: [1024, 768])
 - **color_depth** (default: 24 (bit))
 - **flash_plugin** (default: True)
@@ -96,4 +97,6 @@ Optional Arguments:
 - **grayscale** (default: False)
 - **http_username** (default: None)
 - **http_password** (default: None)
-    
+
+Image Options:
+To be completed    
