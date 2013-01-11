@@ -48,7 +48,22 @@ class WKOption(object):
                             if self.value is not None else ""])
 
 
-OPTIONS = [
+ARGUMENTS_PDF = ['enable_plugins',
+                'disable_javascript',
+                'no_background',
+                'grayscale',
+                'redirect_delay',
+                'orientation',
+                'dpi',
+                'username',
+                'password',
+                'margin_bottom',
+                'margin_top',
+                'margin_left',
+                'margin_right',
+                'disable_smart_shrinking']
+
+OPTIONS_PDF = [
     WKOption('enable-plugins', '-F',
                  default=False,
                  help="use flash and other plugins",
@@ -108,6 +123,113 @@ OPTIONS = [
                  help="Disable the intelligent shrinking strategy used by WebKit that makes the pixel/dpi ratio none constant",
                  ),
 ]
+ARGUMENTS_IMG = ['crop_h',
+                'crop_w',
+                'crop_x'
+                'crop_y',
+                'custom_header',
+                'custom_header_propagation',
+                'encoding',
+                'format',
+                'height',
+                'no_images',
+                'disable_javascript',
+                'javascript_delay',
+                'load_error_handling',
+                'disable_local_file_access',
+                'minimum_font_size',
+                'password',
+                'enable_plugins',
+                'post',
+                'proxy',
+                'quality',
+                'run_script',
+                'no_stop_slow_scripts',
+                'user_style_sheet',
+                'username',
+                'width',
+                'zoom']
+OPTIONS = [
+    WKOption('crop-h', None,
+                default=0,
+                help='set height for cropping'),
+    WKOption('crop-w', None,
+                default=0,
+                help='set width for cropping'),
+    WKOption('crop-x', None,
+                default=0,
+                help='set x-coordinate for cropping'),
+    WKOption('crop-y', None,
+                default=0,
+                help='set y-coordinate for cropping'),
+    WKOption('custom-header', None,
+                default="",
+                help='Set an additional http header'),
+    WKOption('custom-header-propagation', None,
+                default=False,
+                help='allow http headers specified by custom-header for each resource request'),
+    WKOption('encoding', None,
+                default="",
+                help='set the default text encoding for input'),
+    WKOption('format', '-f',
+                default='jpg',
+                help='set the output file format'),
+    WKOption('height', None,
+                default=0,
+                help='Set screen height (default is calculated from page content)'),
+    WKOption('no-images', None,
+                default=False,
+                help='Do not load images'),
+    WKOption('disable-javascript', '-n',
+                default=False,
+                help='Do not allow web pages to allow javascript'),
+    WKOption('javascript-delay', None,
+                default=200,
+                help='Wait some number of milliseconds for javascript to finish'),
+    WKOption('load-error-handling', None,
+                default="abort",
+                validate=lambda x: x in ['abort', 'ignore', 'skip'],
+                validate_error="Error handling argument must be abort, ignore or skip"),
+    WKOption('disable-local-file-access', None,
+                default=False,
+                help='Do not allow conversion of a local file to read in other local files'),
+    WKOption('minimum-font-size', None,
+                default=0,
+                help='Set a minimum font size'),
+    WKOption('password', None,
+                default="",
+                help='HTTP authentication password'),
+    WKOption('enable-plugins', None,
+                default=False,
+                help='Enable installed plugins (though plugins will likely not work)'),
+    WKOption('post', None,
+                default="",
+                help='Add an additional post field, format is <name> <value>'),
+    WKOption('proxy', '-p',
+                default="",
+                help='set proxy'),
+    WKOption('quality', None,
+                default=94,
+                help='Output image quality, integer between 0 and 100'),
+    WKOption('run-script', None,
+                default="",
+                help='Run additional javascript after the page is done loading'),
+    WKOption('no-stop-slow-scripts', None,
+                default=False,
+                help='do not stop slow running javascripts'),
+    WKOption('user-style-sheet', None,
+                default="",
+                help='Specify a url to a given style sheet that should load with every page'),
+    WKOption('username', None,
+                default="",
+                help='Specify username for HTTP authentication'),
+    WKOption('width', None,
+                default=1024,
+                help='set screen width in pixels'),
+    WKOption('zoom', None,
+                default=1.0,
+                help='set a zoom factor (float)')
+]
 
 
 class WKhtmlToPdf(object):
@@ -118,14 +240,22 @@ class WKhtmlToPdf(object):
         self.url = None
         self.output_file = None
         self.params = []
+        self.pdf=False
+        self.OPTIONS = OPTIONS if self.pdf is False else OPTIONS_PDF
 
         # get the url and output_file options
         try:
             self.url, self.output_file = args[0], args[1]
             print self.url
             print self.output_file
+            if '.pdf' in self.output_file:
+                self.pdf=True
         except IndexError:
             pass
+
+        for arg in kwargs.viewkeys():
+            if (arg not in ARGUMENTS_PDF and self.pdf is True) or (arg not in ARGUMENTS_IMG and self.pdf is False):
+                raise Exception("Provided an invalid argument.  Please check for spelling errors.")
 
         if not self.url or not self.output_file:
             raise Exception("Missing url and output file arguments")
@@ -136,7 +266,7 @@ class WKhtmlToPdf(object):
             self.output_file = os.path.join('/tmp', self.output_file)
 
         # set the options per the kwargs coming in
-        for o in OPTIONS:
+        for o in self.OPTIONS:
             if kwargs.get(o.dest) is not None:
                 o.value = kwargs.get(o.dest)
                 self.params.append(o.to_cmd())
@@ -161,7 +291,8 @@ class WKhtmlToPdf(object):
 
         # execute the command
         # change up depending on how the configuraiton is installed
-        command = 'wkhtmltopdf-0.9.9-OS-X.i368'
+        command = './wkhtmltoimage' if self.pdf == False else 'wkhtmltopdf-0.9.9-OS-X.i368'
+        print command
         # prevents spacing errors
         print self.params
         if len(self.params) > 0:
