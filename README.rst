@@ -86,6 +86,7 @@ Optional Arguments:
 ~~~~~~~~~~~~~~~~~~~
 
 PDF Options:
+
 - **screen_resolution** (default: [1024, 768])
 - **color_depth** (default: 24 (bit))
 - **flash_plugin** (default: True)
@@ -99,4 +100,5 @@ PDF Options:
 - **http_password** (default: None)
 
 Image Options:
+
 To be completed    
