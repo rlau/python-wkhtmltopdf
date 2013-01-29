@@ -31,8 +31,22 @@ wkhtmltopdf
 3. Install wkhtmltopdf::
         
     $ sudo apt-get install wkhtmltopdf
+
+4. Install wkhtmltoimage::
     
-4. Install flashplugin::
+    a. On 32 bit::
+        $ wget http://wkhtmltopdf.googlecode.com/files/wkhtmltoimage-0.11.0_rc1-static-i386.tar.bz2
+        $ tar xvjf wkhtmltoimage-0.11.0_rc1-static-i386.tar.bz2
+        $ mv ./wkhtmltoimage-i386 /usr/bin/wkhtmltoimage
+        $ chmod +x /usr/bin/wkhtmltoimage
+    
+    b. On 64 bit::
+        Follow steps for 32 bit, replacing "i386" with "amd64"
+
+    c. On OS X::
+        Find appropriate compilation at http://code.google.com/p/wkhtmltopdf/downloads/list and follow same instructions as above
+
+5. Install flashplugin::
         
     $ sudo apt-get install flashplugin-nonfree
 
@@ -101,4 +115,32 @@ PDF Options:
 
 Image Options:
 
-To be completed    
+- **crop_h** (default: 0)
+- **crop_w** (default: 0)
+- **crop_x** (default: 0)
+- **crop_y** (default: 0)
+- **custom_header** (default: "")
+- **custom_header_propagation** (default: False)
+- **debug_javascript** (default: False)
+- **encoding** (default: "")
+- **format** (default: 'jpg')
+- **height** (default: gathered from page content)
+- **no_images** (default: False)
+- **disable_javascript** (default: False)
+- **javascript_delay** (default: 200)
+- **load_error_handling** (default: abort)
+- **disable_local_file_access** (default: False)
+- **minimum_font_size** (default: 0)
+- **password** (default: "")
+- **enable_plugins** (default: False)
+- **post** (default: "")
+- **proxy** (default: "")
+- **quality** (default: 94)
+- **run_script** (default: "")
+- **no_stop_slow_scripts** (Default: False)
+- **user_style_sheet** (Default: "")
+- **username** (Default: "")
+- **width** (Default: 1024)
+- **zoom** (Default: 1.0)
+
+

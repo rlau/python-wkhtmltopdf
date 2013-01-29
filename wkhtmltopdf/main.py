@@ -125,10 +125,11 @@ OPTIONS_PDF = [
 ]
 ARGUMENTS_IMG = ['crop_h',
                 'crop_w',
-                'crop_x'
+                'crop_x',
                 'crop_y',
                 'custom_header',
                 'custom_header_propagation',
+                'debug_javascript',
                 'encoding',
                 'format',
                 'height',
@@ -168,6 +169,9 @@ OPTIONS = [
     WKOption('custom-header-propagation', None,
                 default=False,
                 help='allow http headers specified by custom-header for each resource request'),
+    WKOption('debug-javascript', None,
+                default=False,
+                help='display javascript debugging output'),
     WKOption('encoding', None,
                 default="",
                 help='set the default text encoding for input'),
@@ -275,7 +279,7 @@ class WKhtmlToPdf(object):
         self.screen_resolution = [1024, 768]
         self.color_depth = 24
 
-    def render(self):
+    def render(self, img_prgm='wkhtmltoimage', pdf_prgm='wkhtmltopdf'):
         """
         Render the URL into a pdf and setup the evironment if required.
         """
@@ -291,15 +295,14 @@ class WKhtmlToPdf(object):
 
         # execute the command
         # change up depending on how the configuraiton is installed
-        command = './wkhtmltoimage' if self.pdf == False else 'wkhtmltopdf-0.9.9-OS-X.i368'
+        command = img_prgm if self.pdf == False else pdf_prgm
         print command
         # prevents spacing errors
-        print self.params
         if len(self.params) > 0:
             command += " " + " ".join([cmd for cmd in self.params])
         
-        command +=' %s %s >> /tmp/wkhtp.log' % ( self.url, self.output_file)
-
+        command +=' %s %s >> /tmp/wkhtp.log' % (self.url, self.output_file)
+        print command
         try:
             p = Popen(command, shell=True,
                         stdout=PIPE, stderr=PIPE, close_fds=True)
@@ -312,7 +315,7 @@ class WKhtmlToPdf(object):
             elif retcode < 0:
                 raise Exception("terminated by signal: ", -retcode)
             else:
-                raise Exception(stderr)
+                print stderr #raise Exception(stderr)
 
         except OSError, exc:
             raise exc
